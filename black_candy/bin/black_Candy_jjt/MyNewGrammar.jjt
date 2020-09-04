@@ -1,0 +1,302 @@
+/**
+ * JavaCC template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
+ */
+options
+{
+  static = true;
+}
+
+PARSER_BEGIN(MyNewGrammar)
+package black_Candy_jjt;
+
+public class MyNewGrammar
+{
+
+  public static void main(String args []) throws ParseException
+  {System.out.println("BLACK Candy programming language  🖤");//Welcome to our language for users
+    System.out.print("Enter:"); //Here the user will enter the sentence to follow the rules of the BLACK Candy language
+    new MyNewGrammar(System.in);
+     try
+    {
+      SimpleNode n= MyNewGrammar.start();
+      n.dump(">>"); 
+      MyNewGrammar.start();
+      System.out.println("ACCEPTED \n Thank you 💋. :)");  //it will print it to user if her/him follow the rules correctly
+    }
+    catch (Exception e)
+    {
+      System.out.println("Oops.\n NOT ACCEPTED :( ");  //it will print it to user if her/him do some thing wrong
+      System.out.println(e.getMessage());
+    }
+  }
+}
+    
+PARSER_END(MyNewGrammar)
+
+
+//                                     **** TOKENS ****
+
+//Here we will review the BLACK Candy language TOKENS in addition to their meanings
+
+SKIP :  // this "SKIP"  it will do skipping for a lots of thing
+{
+ < spaces : " " >  // do SKIP for spaces
+| "\r"        // & do SKIP  for  Carriage return
+| "\t"          // & do SKIP  for Horizontal tab
+| "\n"           // & do SKIP  for New line
+| < Comment : "%%" (~["\n"])* >
+  // & do SKIP  for Comment ,it that mean if her/him do   Comment  ,It begins with %%then will put her/him Comment 
+}
+
+// ----------------------------------------
+
+TOKEN : /* Arithmetic operation */
+{
+  < PLUS : "&" >    // It's PLUS      TOKEN looks .
+| < MINUS : "*&" >    // It's   MINUS     TOKEN looks.
+| < MULTIPLY : "X" >   // It's  MULTIPLY      TOKEN looks .
+| < DIVIDE : "*X" >  // It's  DIVIDE      TOKEN  looks.
+}
+
+// ----------------------------------------
+
+TOKEN : /* Relational operation */
+{
+  < EQUALS : "~~" >   // It's  EQUALS      TOKEN  looks.
+| < NOT_EQUALS : "*~~" >// It's  NOT EQUALS      TOKEN looks.
+}
+
+// ----------------------------------------
+
+TOKEN : /*  Comparison */
+{
+  < GRATER_THAN : "~*" >  // It's  GRATER_THAN     TOKEN  looks.
+| < LESS_THAN : "*~" >  // It's   LESS_THAN   TOKEN looks.
+}
+
+// ----------------------------------------
+
+TOKEN : /* Logical operator */
+{
+< OR : "v" >     // It's    OR     TOKEN looks.
+| < AND : "^" >    // It's  AND     TOKEN
+
+}
+
+// ----------------------------------------
+
+TOKEN: { /*Alphabet, DIGIT */
+  < Alphabet :  (["a"-"z", "A"-"Z" ]) >  // our Alphabet start from "A" to "Z" like Capital letter and Small letter
+| < DIGIT : (["0"-"9"]) >   // our DIGIT start from "0" to "9"
+|  < OZ : (["0"-"1"]) >    // our binary number  is "0" and "1"
+}
+
+// ----------------------------------------
+ 
+TOKEN: { /* IDENTIFIRES */ 
+  < ID : "#" (<Alphabet>){2,10 } "#">  // To   Define any variable should start with "#" and end with "#"
+}
+
+// ----------------------------------------
+
+TOKEN: { /* Punctuation Marks */
+  < COLON : "," >
+| < UPCOLON : "'" > 
+| < DOT : "." >
+| < DOTS : ":" > 
+| < HASH : "#" >  //IDENTIFIRES Should start with # and end with it 
+| < VER : "||" >
+| < EX : "!" >
+| < AT : "@" >   //Keyword Should start with @
+
+
+}
+
+// ----------------------------------------
+
+TOKEN: { /*Assign operator  */
+  < ASSIGN : "->" >  // to  Assign  any statment 
+}
+
+// ----------------------------------------
+
+TOKEN : /* Digits */ {
+   < DOUBLE : (<DIGIT>)+ < DOT >(<DIGIT>)+ >
+   | < INT : (<DIGIT>)+ >
+ }
+
+// ----------------------------------------
+
+TOKEN: { /* KEYWORD */
+  < ARRAY : "Array">
+| < num : "num"> // integer  number 
+| < NUM : "NUM">  //double number 
+| < SEN : "sen">   // string 
+| < MAIN : "main">  // Main class 
+| < WRITE : "write">  // to print 
+| < CON : "CON">       // for a CONDITION
+| < word : "word"> // for a  word 
+}
+
+// ----------------------------------------
+
+TOKEN: { /* word */
+  < WORD : (<Alphabet>)(<Alphabet>)+>    // The word consists of two or more letters
+}
+
+// ----------------------------------------
+
+TOKEN: { /* STRING */
+  < STRING : (< WORD >)(" "(<WORD>))* > //The STRING consists of one  or more word or space 
+}
+
+
+
+//                                     **** BNF ****
+
+
+// ----------------------------------------                               
+ SimpleNode start (): {Token t; }
+ {
+ STMT() t= < DOT > {jjtThis.jjtSetValue(t.image);}
+ {
+   return jjtThis;
+ }
+}
+
+// ----------------------------------------
+
+void STMT(): {Token t;}
+{
+   LOOKAHEAD(2)
+ 
+  ASSIGMNET()|  ARRAY()  |CONDITION()| (Numbers() ( ARTHIMETIC()| LogicalOperator() | Comparisons()  |RelationalOperator() ))
+ }
+
+// ----------------------------------------
+
+ void ASSIGMNET(): {Token t1,t2;}     //this method  Know any   DATA_TYPE  and ASSIGMNET  then  print Its type 
+  { 
+ t1=  < AT > 
+  DATA_TYPE()
+  IDEN()
+  t2= < ASSIGN >  
+   (VAR())
+  {jjtThis.jjtSetValue(t1.image+", "+t2.image);} 
+}
+
+// ----------------------------------------
+
+ void IDEN(): { Token t; }     //this method  Know  ID  then  print Its type 
+  { 
+ t= < ID > {jjtThis.jjtSetValue(t.image);}
+}
+
+// ----------------------------------------
+
+void VAR(): {Token t;}      //this method  Know   VARbales  then  print Its type 
+{
+ ( Numbers() |  t=< WORD > {jjtThis.jjtSetValue(t.image);}| t=< STRING >{jjtThis.jjtSetValue(t.image);}) 
+}
+
+// ----------------------------------------
+
+void INDEXend(): {Token t1, t2;}      //this method  Know  INDEXend for array   then  print it
+{
+ (t1=< DOT > t2=<EX >){jjtThis.jjtSetValue(t1.image+", "+t2.image);}
+}
+
+// ----------------------------------------
+
+void ArrrayElements(): {Token t;}    //this method  Know  ArrrayElements and  print it by type 
+{
+ (t=< WORD >{jjtThis.jjtSetValue(t.image);} |t=< INT >{jjtThis.jjtSetValue(t.image);})  
+}
+
+// ----------------------------------------
+
+void ARRAY(): {Token t1,t2,t3,t4, t5; }  //this method  Know  Arrray and  print  array's components
+{
+   t1= < AT >
+   t2=  < ARRAY >
+   IDEN()
+   t3= <ASSIGN >
+   (t4= <VER>)
+   (ArrrayElements() INDEXend())+
+   (t5= <VER>)
+   {jjtThis.jjtSetValue(t1.image+", "+t2.image+ " , "+t3.image+", "+t4.image+", "+t5.image);}
+}
+
+// ----------------------------------------
+
+void DATA_TYPE(): { Token t;}    //this method  Know  DATA_TYPE and  print it by type 
+
+{
+ 
+(   t= < num > {jjtThis.jjtSetValue(t.image);}
+| t= < NUM > {jjtThis.jjtSetValue(t.image);}
+| t= < SEN > {jjtThis.jjtSetValue(t.image);}
+| t= < CON > {jjtThis.jjtSetValue(t.image);}
+| t= < word > {jjtThis.jjtSetValue(t.image);}
+)
+}
+
+// ----------------------------------------
+
+void Numbers(): { Token t; } //this method  Know  DATA_TYPE and  print it by type 
+ {
+    ( t= < INT > {jjtThis.jjtSetValue(t.image);}  | t= < DOUBLE > {jjtThis.jjtSetValue(t.image);} )
+ }
+
+// ----------------------------------------
+ void ARTHIMETIC(): {Token t; }
+ {
+    (  t= < PLUS > {jjtThis.jjtSetValue(t.image);}| t= < MINUS > {jjtThis.jjtSetValue(t.image);}| t= < MULTIPLY > {jjtThis.jjtSetValue(t.image);}| t= < DIVIDE > {jjtThis.jjtSetValue(t.image);}) Numbers()
+ }
+ 
+// ----------------------------------------
+
+void Comparisons(): {Token t; }
+{
+ (t= < GRATER_THAN > {jjtThis.jjtSetValue(t.image);}| t= < LESS_THAN >  {jjtThis.jjtSetValue(t.image);}) Numbers()
+}
+
+// ----------------------------------------
+
+void LogicalOperator(): { Token t; }
+{
+ (t= < OR > {jjtThis.jjtSetValue(t.image);}| t= < AND > {jjtThis.jjtSetValue(t.image);})  Numbers()
+}
+
+// ----------------------------------------
+
+void RelationalOperator(): { Token t;}
+{
+ ( t= < EQUALS > {jjtThis.jjtSetValue(t.image);}| t= < NOT_EQUALS > {jjtThis.jjtSetValue(t.image);} ) Numbers()
+}
+
+// ----------------------------------------
+
+void CONDITION(): { Token t1,t2,t3,t4;}
+{
+  (t1= < DOTS >
+   t2= < DOTS > )
+  Numbers() (Comparisons() | LogicalOperator () |RelationalOperator ())
+  (t3=< DOTS >
+   t4=< DOTS >)
+   CON()
+   {jjtThis.jjtSetValue(t1.image+", "+t2.image+ " , "+t3.image+", "+t4.image);}
+}
+
+// ----------------------------------------
+
+void CON(): {Token t1,t2,t3; }
+{
+  LOOKAHEAD(2)
+ 
+ (t1= < DOTS >  {jjtThis.jjtSetValue(t1.image);})*  
+ (Numbers() ( Comparisons() | LogicalOperator () |RelationalOperator ()) t2= < DOTS > t3=<DOTS > {jjtThis.jjtSetValue(t2.image+ " , "+t3.image);} STMT())  
+| STMT()
+
+
+}

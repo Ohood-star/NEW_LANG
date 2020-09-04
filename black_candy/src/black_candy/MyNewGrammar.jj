@@ -1,0 +1,282 @@
+/**
+ * JavaCC template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
+ */
+options
+{
+  static = true;
+}
+
+PARSER_BEGIN(MyNewGrammar)
+package black_candy;
+
+public class MyNewGrammar
+{
+  public static void main(String args []) throws ParseException
+  {
+    
+    System.out.println("BLACK Candy programming language 🖤");   //Welcome to our language for users
+    System.out.print("Enter:"); //Here the user will enter the sentence to follow the rules of the BLACK Candy language
+    new MyNewGrammar(System.in);
+    try
+    {
+      MyNewGrammar.start();
+      System.out.println("ACCEPTED \n Thank you 💋. :)"); //it will print it to user if her/him follow the rules correctly
+    }
+    catch (Exception e)
+    {
+      System.out.println("Oops.\n NOT ACCEPTED :( ");  //it will print it to user if her/him do some thing wrong
+      System.out.println(e.getMessage());
+    }
+  }
+}
+
+PARSER_END(MyNewGrammar)
+
+
+//                                     ************ TOKENS ************
+
+//Here we will review the BLACK Candy language TOKENS in addition to their meanings
+
+SKIP :  // this "SKIP"  it will do skipping for a lots of thing
+{
+ < spaces : " " >  // do SKIP for spaces
+| "\r"        // & do SKIP  for  Carriage return
+| "\t"          // & do SKIP  for Horizontal tab
+| "\n"           // & do SKIP  for New line
+| < Comment : "%%" (~["\n"])* >
+  // & do SKIP  for Comment ,it that mean if her/him do   Comment  ,It begins with %%then will put her/him Comment 
+}
+
+// ----------------------------------------
+
+TOKEN : /* Arithmetic operation */
+{
+  < PLUS : "&" >    // It's PLUS      TOKEN looks .
+| < MINUS : "*&" >    // It's   MINUS     TOKEN looks.
+| < MULTIPLY : "X" >   // It's  MULTIPLY      TOKEN looks .
+| < DIVIDE : "*X" >  // It's  DIVIDE      TOKEN  looks.
+}
+
+// ----------------------------------------
+
+TOKEN : /* Relational operation */
+{
+  < EQUALS : "~~" >   // It's  EQUALS      TOKEN  looks.
+| < NOT_EQUALS : "*~~" >// It's  NOT EQUALS      TOKEN looks.
+}
+
+// ----------------------------------------
+
+TOKEN : /*  Comparison */
+{
+  < GRATER_THAN : "~*" >  // It's  GRATER_THAN     TOKEN  looks.
+| < LESS_THAN : "*~" >  // It's   LESS_THAN   TOKEN looks.
+}
+
+// ----------------------------------------
+
+TOKEN : /* Logical operator */
+{
+< OR : "v" >     // It's    OR     TOKEN looks.
+| < AND : "^" >    // It's  AND     TOKEN
+
+}
+
+// ----------------------------------------
+
+TOKEN: { /*Alphabet, DIGIT */
+  < Alphabet :  (["a"-"z", "A"-"Z" ]) >  // our Alphabet start from "A" to "Z" like Capital letter and Small letter
+| < DIGIT : (["0"-"9"]) >   // our DIGIT start from "0" to "9"
+|  < OZ : (["0"-"1"]) >    // our binary number  is "0" and "1"
+}
+
+// ----------------------------------------
+ 
+TOKEN: { /* IDENTIFIRES */ 
+  < ID : "#" (<Alphabet>){2,10 } "#">  // To   Define any variable should start with "#" and end with "#"
+}
+
+// ----------------------------------------
+
+TOKEN: { /* Punctuation Marks */
+  < COLON : "," >
+| < UPCOLON : "'" > 
+| < DOT : "." >
+| < DOTS : ":" > 
+| < HASH : "#" >  //IDENTIFIRES Should start with # and end with it 
+| < VER : "||" >  // for array end and start
+| < EX : "!" >    // for array
+| < AT : "@" >   //Keyword Should start with @
+
+
+}
+
+// ----------------------------------------
+
+TOKEN: { /*Assign operator  */
+  < ASSIGN : "->" >  // to  Assign  any statement 
+}
+
+// ----------------------------------------
+
+TOKEN : /* Digits */ {
+   < DOUBLE : (<DIGIT>)+ < DOT >(<DIGIT>)+ >
+   | < INT : (<DIGIT>)+ >
+ }
+
+// ----------------------------------------
+
+TOKEN: { /* KEYWORD */
+  < ARRAY : "Array">
+| < num : "num"> // integer  number 
+| < NUM : "NUM">  //double number 
+| < SEN : "sen">   // string 
+| < MAIN : "main">  // Main class 
+| < WRITE : "write">  // to print 
+| < CON : "CON">       // for a CONDITION
+| < word : "word"> // for a  word 
+}
+
+// ----------------------------------------
+
+TOKEN: { /* word */
+  < WORD : (<Alphabet>)(<Alphabet>)+>    // The word consists of two or more letters
+}
+
+// ----------------------------------------
+
+TOKEN: { /* STRING */
+  < STRING : (< WORD >)(" "(<WORD>))* > //The STRING consists of one  or more word or space 
+}
+
+
+
+
+//                                     ************ BNF ************
+                               
+ void start (): { }
+ {
+ STMT() < DOT > //the ending of each statement is "."
+}
+
+// ----------------------------------------
+
+void STMT(): { }
+{
+   LOOKAHEAD(2) // any statement could be  ASSIGMNET or ARRAY  or CONDITION or ARTHIMETIC etc
+ 
+  ASSIGMNET()|  ARRAY()  |CONDITION()| (Numbers() ( ARTHIMETIC()| LogicalOperator() | Comparisons()  |RelationalOperator() ))
+ }
+
+// ----------------------------------------
+
+ void ASSIGMNET(): { } //this method ASSIGMNET any keyword
+  { 
+ < AT >  DATA_TYPE() IDEN() < ASSIGN >  (VAR())    
+}
+
+// ----------------------------------------
+
+ void IDEN(): { }//this method  for do ID
+ 
+  { 
+ < ID > 
+}
+
+// ----------------------------------------
+
+void VAR(): {}//this method  for do varbales
+
+{
+ ( Numbers() |  < WORD > | < STRING >) 
+}
+
+// ----------------------------------------
+
+void ARRAY(): { } //this method for how initialise array 
+
+{
+  < AT > < ARRAY > IDEN() <ASSIGN > (<VER>) (ArrrayElements() INDEXend())+ (<VER>)
+}
+
+// ----------------------------------------
+
+void INDEXend(): {}   //this method  to Fill in the array ".!" for the end 
+{
+ (< DOT > <EX >)
+}
+
+// ----------------------------------------
+
+void ArrrayElements(): {}   //this method for type of  Array Elements
+{
+ (< WORD > |< INT >)  
+}
+
+// ----------------------------------------
+
+
+void DATA_TYPE(): { } //this method for defined  DATA_TYPE
+
+{
+   ( 
+ < num >  //int
+| < NUM > // double
+|  < SEN >
+| < CON >
+| < word >
+)
+}
+
+
+// ----------------------------------------
+ void ARTHIMETIC(): { } //this method for defined type of ARITHMETIC
+ {
+    (  < PLUS >| < MINUS >| < MULTIPLY >| < DIVIDE >) Numbers()
+ }
+ 
+// ----------------------------------------
+
+void Comparisons(): { } //this method for defined type of Comparisons
+{
+ (< GRATER_THAN >| < LESS_THAN > ) Numbers()
+}
+
+// ----------------------------------------
+
+void LogicalOperator(): { }  //this method for defined type of LogicalOperator
+{
+ (< OR >| < AND > )  Numbers()
+}
+
+// ----------------------------------------
+
+void RelationalOperator(): { }  //this method for defind type of  RelationalOperato
+{
+ (< EQUALS >| < NOT_EQUALS > ) Numbers()
+}
+
+// ----------------------------------------
+
+void CONDITION(): { }    //this method how to do CONDITION
+{
+  (< DOTS > < DOTS >) Numbers() (Comparisons() | LogicalOperator () |RelationalOperator ()) (< DOTS > < DOTS >) (STMT())+ CON()
+}
+
+// ----------------------------------------
+
+void CON(): { }    //this method how rest of CONDITION
+{
+  LOOKAHEAD(2)
+ 
+ (< DOTS >)* Numbers() ( Comparisons() | LogicalOperator () |RelationalOperator ()) (< DOTS >)( STMT())+ (< DOTS >)* (STMT())+
+
+}
+
+// ----------------------------------------
+
+void Numbers(): { } //this method for defined type of number 
+
+ {
+    ( < INT >  | < DOUBLE > )
+ }

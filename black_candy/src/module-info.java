@@ -1,0 +1,2 @@
+module black_candy {
+}
